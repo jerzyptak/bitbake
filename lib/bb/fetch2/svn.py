@@ -134,6 +134,7 @@ class Svn(FetchMethod):
                 logger.debug(1, "Running %s", svnupdatecmd)
                 bb.fetch2.check_network_access(d, svnupdatecmd, ud.url)
                 runfetchcmd(svnupdatecmd, d, workdir=ud.moddir)
+                wdir = ud.moddir
             else:
                 svnfetchcmd = self._buildsvncommand(ud, d, "fetch")
                 logger.info("Fetch " + ud.url)
@@ -142,10 +143,11 @@ class Svn(FetchMethod):
                 logger.debug(1, "Running %s", svnfetchcmd)
                 bb.fetch2.check_network_access(d, svnfetchcmd, ud.url)
                 runfetchcmd(svnfetchcmd, d, workdir=ud.pkgdir)
+                wdir = ud.pkgdir
 
             if not ("externals" in ud.parm and ud.parm["externals"] == "nowarn"):
                 # Warn the user if this had externals (won't catch them all)
-                output = runfetchcmd("svn propget svn:externals || true", d, workdir=ud.moddir)
+                output = runfetchcmd("svn propget svn:externals || true", d, workdir=wdir)
                 if output:
                     if "--ignore-externals" in svnfetchcmd.split():
                         bb.warn("%s contains svn:externals." % ud.url)
